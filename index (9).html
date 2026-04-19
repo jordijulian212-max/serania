@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Serenai — Tu guía de bienestar mental con IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════
+   RESET + TOKENS
+═══════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#f9f8f6;color:#1a1917;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+:root{
+  /* neutrals */
+  --ink:#1a1917; --ink-soft:#3d3936; --ink-mid:#6b6460; --ink-light:#9a928d; --ink-ghost:#c4bdb9;
+  --bg:#f9f8f6; --bg2:#f2f0ed; --bg3:#e9e6e1; --white:#ffffff;
+  /* brand */
+  --green:#1e7a6a; --green-l:#2a9c89; --green-xl:#38c4ae; --green-bg:rgba(30,122,106,.07); --green-border:rgba(30,122,106,.18);
+  --peach:#d4704a; --peach-l:#e8916e; --peach-bg:rgba(212,112,74,.07);
+  --navy:#1e3a5f; --navy-l:#2d5a8e; --navy-bg:rgba(30,58,95,.06);
+  --lilac:#6b5ea8; --lilac-bg:rgba(107,94,168,.07);
+  --gold:#b5882a; --gold-bg:rgba(181,136,42,.08);
+  /* utils */
+  --border:rgba(26,25,23,.07); --border-m:rgba(26,25,23,.13);
+  --r:12px; --r-l:20px; --r-xl:28px;
+  --sh-s:0 1px 4px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --sh-m:0 4px 20px rgba(0,0,0,.08),0 1px 4px rgba(0,0,0,.05);
+  --sh-l:0 12px 48px rgba(0,0,0,.1),0 4px 16px rgba(0,0,0,.06);
+}
+
+/* ═══════════════════════════════
+   TYPOGRAPHY HELPERS
+═══════════════════════════════ */
+.serif{font-family:'Playfair Display',serif}
+.tag-label{display:inline-flex;align-items:center;gap:.45rem;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green);background:var(--green-bg);border:1px solid var(--green-border);padding:.28rem .8rem;border-radius:100px}
+.h1{font-family:'Playfair Display',serif;font-size:clamp(2.8rem,5vw,5rem);line-height:1.06;letter-spacing:-.03em;font-weight:500;color:var(--ink)}
+.h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,3.5vw,3rem);line-height:1.1;letter-spacing:-.02em;font-weight:500;color:var(--ink)}
+.h3{font-family:'Playfair Display',serif;font-size:1.35rem;line-height:1.25;letter-spacing:-.01em;font-weight:500;color:var(--ink)}
+.lead{font-size:1.1rem;color:var(--ink-mid);line-height:1.75;font-weight:300}
+em{font-style:italic;color:var(--green)}
+
+/* ═══════════════════════════════
+   LAYOUT
+═══════════════════════════════ */
+.wrap{max-width:1160px;margin:0 auto;padding:0 2.5rem}
+section{position:relative}
+
+/* ═══════════════════════════════
+   BUTTONS
+═══════════════════════════════ */
+.btn{display:inline-flex;align-items:center;gap:.5rem;font-weight:600;font-size:.95rem;border-radius:var(--r);transition:all .2s;cursor:pointer}
+.btn-primary{background:var(--green);color:#fff;padding:.85rem 1.75rem;box-shadow:0 2px 10px rgba(30,122,106,.28)}
+.btn-primary:hover{background:var(--green-l);transform:translateY(-2px);box-shadow:0 6px 22px rgba(30,122,106,.34)}
+.btn-outline{border:1.5px solid var(--border-m);color:var(--ink-soft);padding:.82rem 1.6rem;background:transparent}
+.btn-outline:hover{background:var(--bg2);border-color:var(--ink-mid)}
+.btn-sm{font-size:.82rem;padding:.55rem 1.1rem}
+.btn-white{background:#fff;color:var(--ink);padding:.85rem 1.75rem;box-shadow:var(--sh-s)}
+.btn-white:hover{background:var(--bg2)}
+
+/* ═══════════════════════════════
+   NAV
+═══════════════════════════════ */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:90;
+  display:flex;align-items:center;justify-content:space-between;
+  height:64px;padding:0 2.5rem;
+  background:rgba(249,248,246,.93);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);transition:box-shadow .3s;
+}
+#nav.raised{box-shadow:var(--sh-s)}
+.nav-logo{display:flex;align-items:center;gap:.55rem;cursor:pointer}
+.logo-icon{
+  width:34px;height:34px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--green),var(--green-xl));
+  display:flex;align-items:center;justify-content:center;
+}
+.logo-icon svg{stroke:#fff;stroke-width:2.2;fill:none;width:18px;height:18px}
+.logo-name{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--ink);letter-spacing:-.01em}
+.nav-links{display:flex;align-items:center;gap:.25rem}
+.nav-link{
+  font-size:.9rem;font-weight:500;color:var(--ink-mid);padding:.45rem .85rem;
+  border-radius:8px;transition:all .18s;cursor:pointer;
+}
+.nav-link:hover,.nav-link.active{color:var(--ink);background:var(--bg2)}
+.nav-actions{display:flex;align-items:center;gap:.65rem}
+.nav-login{font-size:.875rem;font-weight:500;color:var(--ink-mid);padding:.45rem .8rem;border-radius:8px;transition:all .18s;cursor:pointer}
+.nav-login:hover{color:var(--ink);background:var(--bg2)}
+.nav-cta{background:var(--green);color:#fff;padding:.48rem 1.15rem;border-radius:var(--r);font-size:.875rem;font-weight:600;transition:all .2s;box-shadow:0 1px 6px rgba(30,122,106,.25);cursor:pointer}
+.nav-cta:hover{background:var(--green-l)}
+.ham{display:none;padding:.4rem;color:var(--ink-mid);cursor:pointer}
+/* mobile menu */
+.mob-menu{display:none;position:fixed;top:64px;left:0;right:0;background:#fff;border-bottom:1px solid var(--border);z-index:89;padding:1.25rem 1.5rem;flex-direction:column;gap:.2rem;box-shadow:var(--sh-m)}
+.mob-menu.show{display:flex}
+.mob-link{font-size:1rem;font-weight:500;color:var(--ink);padding:.7rem .75rem;border-radius:8px;transition:background .15s;cursor:pointer}
+.mob-link:hover{background:var(--bg2)}
+.mob-divider{height:1px;background:var(--border);margin:.5rem 0}
+
+/* ═══════════════════════════════
+   PAGES SYSTEM
+═══════════════════════════════ */
+.page{display:none}
+.page.active{display:block}
+
+/* ═══════════════════════════════
+   HOME — HERO
+═══════════════════════════════ */
+.hero{
+  min-height:100vh;display:flex;align-items:center;
+  padding:8rem 2.5rem 5rem;
+  background:
+    radial-gradient(ellipse 90% 70% at 65% 40%,rgba(30,122,106,.05) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 15% 75%,rgba(212,112,74,.04) 0%,transparent 55%),
+    var(--bg);
+  position:relative;overflow:hidden;
+}
+.hero::after{
+  content:'';position:absolute;inset:0;pointer-events:none;opacity:.022;
+  background-image:radial-gradient(circle at 1px 1px,rgba(26,25,23,1) 1px,transparent 0);
+  background-size:26px 26px;
+}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;position:relative;z-index:1}
+.hero-lede{font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:1.4rem;display:flex;align-items:center;gap:.5rem}
+.hero-lede::before{content:'';width:20px;height:1px;background:var(--green)}
+.hero-title{margin-bottom:1.4rem}
+.hero-body{max-width:480px;margin-bottom:2.2rem}
+.hero-ctas{display:flex;gap:.85rem;flex-wrap:wrap;margin-bottom:2.8rem}
+.hero-social{display:flex;gap:2rem;flex-wrap:wrap;padding-top:1.6rem;border-top:1px solid var(--border)}
+.social-stat{display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:var(--ink-mid)}
+.social-stat strong{font-weight:700;color:var(--ink);font-size:.9rem}
+.social-stat svg{color:var(--green);opacity:.65;width:14px;height:14px;stroke-width:2.5;flex-shrink:0}
+
+/* HERO MOCKUP */
+.hero-right{position:relative}
+.mockup-card{
+  background:#fff;border:1px solid var(--border);border-radius:var(--r-l);
+  overflow:hidden;box-shadow:var(--sh-l);
+}
+.mockup-topbar{
+  background:var(--green);padding:.9rem 1.25rem;
+  display:flex;align-items:center;gap:.75rem;
+}
+.mockup-av{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:1rem}
+.mockup-title{font-weight:600;font-size:.875rem;color:#fff}
+.mockup-sub{font-size:.7rem;color:rgba(255,255,255,.65);display:flex;align-items:center;gap:.3rem}
+.mockup-sub::before{content:'';width:5px;height:5px;background:rgba(255,255,255,.8);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.mockup-body{padding:1.25rem;display:flex;flex-direction:column;gap:.75rem}
+.msg-in{background:var(--bg2);border-radius:14px 14px 14px 3px;padding:.75rem .95rem;font-size:.83rem;line-height:1.62;color:var(--ink-soft);max-width:88%}
+.msg-out{background:var(--green);border-radius:14px 14px 3px 14px;padding:.75rem .95rem;font-size:.83rem;line-height:1.62;color:#fff;max-width:75%;align-self:flex-end;margin-left:auto}
+.msg-ts{font-size:.65rem;color:var(--ink-ghost);text-align:center;margin:.1rem 0}
+.typing-row{display:flex;gap:3px;align-items:center;padding:.6rem .95rem;background:var(--bg2);border-radius:14px 14px 14px 3px;width:fit-content}
+.td{width:5px;height:5px;background:var(--ink-light);border-radius:50%;animation:tyd 1.3s infinite}
+.td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
+@keyframes tyd{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-4px);opacity:.9}}
+.mockup-input{display:flex;align-items:center;gap:.65rem;padding:.85rem 1.1rem;border-top:1px solid var(--border)}
+.mock-inp{flex:1;background:var(--bg2);border-radius:100px;padding:.5rem 1rem;font-size:.8rem;color:var(--ink-light)}
+.mock-send{width:30px;height:30px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center}
+.mock-send svg{stroke:#fff;stroke-width:2.5;fill:none;width:13px;height:13px}
+
+/* float chips on mockup */
+.chip{
+  position:absolute;background:#fff;border:1px solid var(--border);border-radius:var(--r);
+  padding:.55rem .85rem;box-shadow:var(--sh-m);font-size:.75rem;font-weight:600;
+  display:flex;align-items:center;gap:.4rem;white-space:nowrap;
+  animation:chipFloat 4s ease-in-out infinite;
+}
+.chip-1{top:-18px;right:20px;animation-delay:0s}
+.chip-2{bottom:-14px;left:-18px;animation-delay:2s}
+@keyframes chipFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.chip-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* ═══════════════════════════════
+   NUMBERS STRIP
+═══════════════════════════════ */
+.nums-strip{
+  background:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:2rem 2.5rem;
+}
+.nums-inner{display:flex;align-items:center;justify-content:center;gap:4rem;flex-wrap:wrap;max-width:900px;margin:0 auto}
+.num-item{text-align:center}
+.num-val{font-family:'Playfair Display',serif;font-size:2.2rem;color:var(--ink);font-weight:500;line-height:1}
+.num-lbl{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-light);margin-top:.3rem}
+.num-sep{width:1px;height:44px;background:var(--border)}
+
+/* ═══════════════════════════════
+   WHO IS IT FOR
+═══════════════════════════════ */
+.forwho{padding:7rem 2.5rem;background:var(--bg)}
+.section-head{text-align:center;max-width:640px;margin:0 auto 4rem}
+.section-head .h2{margin:.65rem 0 .85rem}
+.scenarios{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem}
+.sc{
+  background:#fff;border:1px solid var(--border);border-radius:var(--r-l);
+  padding:1.75rem;transition:all .25s;position:relative;overflow:hidden;cursor:default;
+}
+.sc::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .25s;background:linear-gradient(135deg,rgba(30,122,106,.03),transparent)}
+.sc:hover{transform:translateY(-4px);box-shadow:var(--sh-m);border-color:var(--border-m)}
+.sc:hover::before{opacity:1}
+.sc-em{font-size:1.8rem;margin-bottom:.9rem;line-height:1}
+.sc-who{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-light);margin-bottom:.4rem}
+.sc-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:500;color:var(--ink);margin-bottom:.6rem;line-height:1.3}
+.sc-body{font-size:.855rem;color:var(--ink-mid);line-height:1.68;font-weight:300;margin-bottom:.9rem}
+.sc-tag{font-size:.75rem;color:var(--green);font-weight:600;display:flex;align-items:center;gap:.3rem}
+.sc-tag svg{width:12px;height:12px;stroke:var(--green);stroke-width:2.5;fill:none;flex-shrink:0}
+
+.not-for{
+  margin-top:2.5rem;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-l);
+  padding:1.75rem 2rem;display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;
+}
+.nf-icon{width:44px;height:44px;border-radius:10px;background:#fff2e8;border:1px solid #f0caa8;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.nf-title{font-weight:700;font-size:.95rem;color:var(--ink);margin-bottom:.5rem}
+.nf-body{font-size:.875rem;color:var(--ink-mid);line-height:1.72;font-weight:300}
+.nf-body strong{font-weight:600;color:var(--ink-soft)}
+.nf-body a{color:var(--green);font-weight:600;text-decoration:underline;text-underline-offset:2px}
+
+/* ═══════════════════════════════
+   HOW IT WORKS
+═══════════════════════════════ */
+.how{padding:7rem 2.5rem;background:#fff}
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center}
+.steps{display:flex;flex-direction:column}
+.step{display:grid;grid-template-columns:48px 1fr;gap:1.25rem;position:relative;padding-bottom:2rem}
+.step:last-child{padding-bottom:0}
+.step-line{position:absolute;left:23px;top:48px;bottom:0;width:1.5px;background:linear-gradient(180deg,var(--border-m) 0%,transparent 100%)}
+.step:last-child .step-line{display:none}
+.step-num{
+  width:44px;height:44px;border-radius:12px;flex-shrink:0;
+  background:var(--green-bg);border:1.5px solid var(--green-border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--green);font-weight:500;
+}
+.step-title{font-weight:700;font-size:.975rem;color:var(--ink);margin-bottom:.35rem}
+.step-body{font-size:.875rem;color:var(--ink-mid);line-height:1.68;font-weight:300}
+
+/* How visual: dashboard preview */
+.how-dash{background:var(--ink);border-radius:var(--r-xl);padding:1.5rem;box-shadow:var(--sh-l);position:relative;max-width:360px;margin:0 auto}
+.dash-bar{display:flex;align-items:center;gap:.6rem;margin-bottom:1.25rem}
+.dash-dot{width:8px;height:8px;border-radius:50%}
+.dash-title{font-size:.7rem;color:rgba(255,255,255,.35);margin-left:auto;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.dash-metrics{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:1rem}
+.dm{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:.85rem}
+.dm-lbl{font-size:.6rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.3rem;font-weight:600}
+.dm-val{font-family:'Playfair Display',serif;font-size:1.5rem;color:#fff;font-weight:300;line-height:1}
+.dm-sub{font-size:.65rem;margin-top:.2rem;font-weight:600}
+.dm-up{color:var(--green-xl)}.dm-dn{color:#f87171}
+.dash-chart{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:1rem;margin-bottom:1rem}
+.dc-head{font-size:.6rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin-bottom:.75rem}
+.bars-row{display:flex;align-items:flex-end;gap:.35rem;height:52px}
+.db{flex:1;border-radius:3px 3px 0 0;min-height:4px}
+.db-lbl{font-size:.5rem;color:rgba(255,255,255,.25);text-align:center;margin-top:.3rem;font-weight:600;letter-spacing:.03em}
+.dash-insight{background:rgba(30,122,106,.18);border:1px solid rgba(56,196,174,.2);border-radius:10px;padding:.8rem}
+.di-label{font-size:.62rem;color:var(--green-xl);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.3rem}
+.di-text{font-size:.75rem;color:rgba(255,255,255,.65);line-height:1.55}
+
+/* ═══════════════════════════════
+   FEATURES — FULL BREAKDOWN
+═══════════════════════════════ */
+.features{padding:7rem 2.5rem;background:var(--bg2)}
+.feat-intro{text-align:center;max-width:620px;margin:0 auto 5rem}
+
+/* Feature mega cards */
+.feat-mega{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+.feat-mega-card{
+  background:#fff;border:1px solid var(--border);border-radius:var(--r-xl);
+  padding:2.25rem;display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;
+  transition:all .22s;
+}
+.feat-mega-card:hover{transform:translateY(-3px);box-shadow:var(--sh-m);border-color:var(--border-m)}
+.feat-mega-card.full{grid-template-columns:1fr}
+.feat-icon-box{
+  width:52px;height:52px;border-radius:14px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;
+}
+.fi-green{background:var(--green-bg);border:1px solid var(--green-border)}
+.fi-peach{background:var(--peach-bg);border:1px solid rgba(212,112,74,.15)}
+.fi-navy{background:var(--navy-bg);border:1px solid rgba(30,58,95,.12)}
+.fi-lilac{background:var(--lilac-bg);border:1px solid rgba(107,94,168,.14)}
+.fi-gold{background:var(--gold-bg);border:1px solid rgba(181,136,42,.15)}
+.fi-teal{background:rgba(30,196,174,.07);border:1px solid rgba(30,196,174,.18)}
+.feat-name{font-weight:700;font-size:1rem;color:var(--ink);margin-bottom:.45rem}
+.feat-desc{font-size:.875rem;color:var(--ink-mid);line-height:1.7;font-weight:300}
+.feat-pills{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.85rem}
+.feat-pill{font-size:.72rem;font-weight:600;padding:.22rem .65rem;border-radius:100px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.feat-pill.p{background:var(--peach-bg);color:var(--peach);border-color:rgba(212,112,74,.15)}
+.feat-pill.n{background:var(--navy-bg);color:var(--navy-l);border-color:rgba(30,58,95,.12)}
+.feat-pill.l{background:var(--lilac-bg);color:var(--lilac);border-color:rgba(107,94,168,.14)}
+
+/* Small feature cards row */
+.feat-small-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.feat-small{background:#fff;border:1px solid var(--border);border-radius:var(--r-l);padding:1.4rem;transition:all .2s}
+.feat-small:hover{transform:translateY(-2px);box-shadow:var(--sh-s);border-color:var(--border-m)}
+.fs-icon{font-size:1.4rem;margin-bottom:.7rem}
+.fs-name{font-weight:700;font-size:.875rem;color:var(--ink);margin-bottom:.3rem}
+.fs-body{font-size:.8rem;color:var(--ink-mid);line-height:1.6;font-weight:300}
+
+/* ═══════════════════════════════
+   TESTIMONIALS
+═══════════════════════════════ */
+.testi{padding:7rem 2.5rem;background:#fff}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:3.5rem}
+.tc{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-xl);padding:1.85rem;position:relative}
+.tc::before{content:'\201C';font-family:'Playfair Display',serif;font-size:3.5rem;color:var(--green);opacity:.12;position:absolute;top:.75rem;left:1rem;line-height:1;pointer-events:none}
+.tc-stars{display:flex;gap:2px;margin-bottom:1rem}
+.star{color:#f59e0b;font-size:.85rem}
+.tc-body{font-family:'Playfair Display',serif;font-size:.975rem;color:var(--ink-soft);line-height:1.72;font-style:italic;margin-bottom:1.25rem;font-weight:400}
+.tc-person{display:flex;align-items:center;gap:.75rem}
+.tc-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0}
+.tc-name{font-weight:700;font-size:.875rem;color:var(--ink)}
+.tc-role{font-size:.78rem;color:var(--ink-mid)}
+
+/* ═══════════════════════════════
+   PLANS PAGE
+═══════════════════════════════ */
+.plans-page{padding:8rem 2.5rem 5rem}
+.plans-head{text-align:center;max-width:600px;margin:0 auto 4rem}
+.plans-head .h2{margin:.65rem 0 .85rem}
+
+/* toggle monthly/yearly */
+.toggle-wrap{display:flex;align-items:center;gap:.85rem;justify-content:center;margin-bottom:3.5rem}
+.toggle-lbl{font-size:.875rem;font-weight:500;color:var(--ink-mid)}
+.toggle-lbl.active{color:var(--ink)}
+.toggle-switch{
+  width:44px;height:24px;border-radius:100px;background:var(--green);
+  position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;
+}
+.toggle-switch.yearly{background:var(--green-l)}
+.toggle-knob{
+  position:absolute;top:3px;left:3px;width:18px;height:18px;
+  border-radius:50%;background:#fff;transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.toggle-switch.yearly .toggle-knob{transform:translateX(20px)}
+.save-badge{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);font-size:.72rem;font-weight:700;padding:.2rem .6rem;border-radius:100px;letter-spacing:.03em}
+
+.plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;max-width:1000px;margin:0 auto 4rem}
+.plan-card{
+  background:#fff;border:1px solid var(--border);border-radius:var(--r-xl);
+  padding:2.1rem;position:relative;overflow:hidden;
+  transition:transform .2s,box-shadow .2s;
+}
+.plan-card:hover{transform:translateY(-4px);box-shadow:var(--sh-m)}
+.plan-card.featured{background:var(--ink);border-color:var(--ink)}
+.plan-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r-xl) var(--r-xl) 0 0}
+.plan-card.starter::before{background:linear-gradient(90deg,#94a3b8,#cbd5e1)}
+.plan-card.growth::before{background:linear-gradient(90deg,var(--green),var(--green-xl))}
+.plan-card.pro::before{background:linear-gradient(90deg,var(--peach),var(--peach-l))}
+.plan-top-badge{
+  position:absolute;top:1.25rem;right:1.25rem;
+  font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--green);background:var(--green-bg);border:1px solid var(--green-border);
+  padding:.2rem .6rem;border-radius:100px;
+}
+.plan-card.featured .plan-top-badge{color:#fff;background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2)}
+.plan-tier{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);margin-bottom:.2rem}
+.plan-card.featured .plan-tier{color:rgba(255,255,255,.45)}
+.plan-tagline{font-size:.875rem;color:var(--ink-mid);margin-bottom:1.5rem;font-weight:300}
+.plan-card.featured .plan-tagline{color:rgba(255,255,255,.5)}
+.plan-price{font-family:'Playfair Display',serif;font-size:3rem;color:var(--ink);line-height:1;font-weight:500}
+.plan-card.featured .plan-price{color:#fff}
+.plan-price sup{font-size:1.15rem;vertical-align:top;margin-top:.45rem}
+.plan-period{font-size:.82rem;color:var(--ink-mid);margin:.15rem 0 1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);font-weight:300}
+.plan-card.featured .plan-period{color:rgba(255,255,255,.4);border-color:rgba(255,255,255,.1)}
+.plan-feats{list-style:none;display:flex;flex-direction:column;gap:.58rem;margin-bottom:1.75rem}
+.pf{display:flex;align-items:flex-start;gap:.55rem;font-size:.875rem;color:var(--ink-soft);line-height:1.45}
+.pf-check{width:17px;height:17px;border-radius:50%;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;background:var(--green-bg)}
+.pf-check svg{width:9px;height:9px;stroke:var(--green);stroke-width:2.5;fill:none}
+.pf.dim{opacity:.38}
+.pf.dim .pf-check{background:var(--bg2)}
+.pf.dim .pf-check svg{stroke:var(--ink-ghost)}
+.plan-card.featured .pf{color:rgba(255,255,255,.75)}
+.plan-card.featured .pf-check{background:rgba(255,255,255,.1)}
+.plan-card.featured .pf-check svg{stroke:#fff}
+.plan-card.featured .pf.dim .pf-check svg{stroke:rgba(255,255,255,.3)}
+.plan-btn{
+  width:100%;padding:.88rem;border-radius:var(--r);
+  font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;border:none;
+}
+.plan-btn-outline{background:transparent;border:1.5px solid var(--border-m);color:var(--ink-soft)}
+.plan-btn-outline:hover{background:var(--bg2);border-color:var(--ink-mid)}
+.plan-btn-green{background:var(--green);color:#fff;box-shadow:0 2px 10px rgba(30,122,106,.28)}
+.plan-btn-green:hover{background:var(--green-l);box-shadow:0 4px 18px rgba(30,122,106,.35)}
+.plan-btn-white{background:#fff;color:var(--ink)}
+.plan-btn-white:hover{background:var(--bg2)}
+.plan-note{text-align:center;margin-top:.6rem;font-size:.75rem;color:var(--ink-ghost);display:flex;align-items:center;justify-content:center;gap:.3rem}
+.plan-card.featured .plan-note{color:rgba(255,255,255,.3)}
+
+/* compare table */
+.compare-wrap{max-width:1000px;margin:0 auto}
+.compare-head{text-align:center;margin-bottom:2.5rem}
+.compare-table{width:100%;border-collapse:collapse;border-radius:var(--r-l);overflow:hidden;background:#fff;border:1px solid var(--border)}
+.ct th{background:var(--bg2);padding:1rem 1.25rem;font-size:.78rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-mid);text-align:left;border-bottom:1px solid var(--border)}
+.ct th:first-child{width:40%}
+.ct th.hl{background:var(--ink);color:rgba(255,255,255,.6);text-align:center}
+.ct td{padding:.9rem 1.25rem;font-size:.875rem;color:var(--ink-soft);border-bottom:1px solid var(--border);vertical-align:middle}
+.ct tr:last-child td{border-bottom:none}
+.ct td.hl{background:rgba(26,25,23,.03);text-align:center;font-weight:600}
+.ct tr:hover td{background:var(--bg)}
+.ct tr:hover td.hl{background:rgba(26,25,23,.05)}
+.check-yes{color:var(--green);font-size:1rem}
+.check-no{color:var(--ink-ghost);font-size:.85rem}
+.check-partial{font-size:.78rem;color:var(--ink-mid);font-weight:500}
+
+/* ═══════════════════════════════
+   BLOG PAGE
+═══════════════════════════════ */
+.blog-page{padding:8rem 2.5rem 5rem;min-height:100vh}
+.blog-head{max-width:600px;margin:0 auto 3.5rem;text-align:center}
+.blog-head .h2{margin:.65rem 0 .85rem}
+.blog-cats{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-bottom:3rem}
+.blog-cat-btn{
+  padding:.4rem .95rem;border-radius:100px;font-size:.8rem;font-weight:600;
+  border:1.5px solid var(--border);color:var(--ink-mid);background:transparent;
+  cursor:pointer;transition:all .18s;
+}
+.blog-cat-btn:hover,.blog-cat-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
+.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.blog-card{
+  background:#fff;border:1px solid var(--border);border-radius:var(--r-xl);
+  overflow:hidden;transition:all .25s;cursor:pointer;
+}
+.blog-card:hover{transform:translateY(-5px);box-shadow:var(--sh-m);border-color:var(--border-m)}
+.blog-thumb{height:185px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;position:relative;overflow:hidden}
+.bt0{background:linear-gradient(135deg,#e8f5f2,#d0ece7)}
+.bt1{background:linear-gradient(135deg,#fde8df,#f9d0c4)}
+.bt2{background:linear-gradient(135deg,#e8e4f8,#d5cfee)}
+.bt3{background:linear-gradient(135deg,#fef3e2,#fce5c6)}
+.bt4{background:linear-gradient(135deg,#e8f0f8,#d0e2f0)}
+.bt5{background:linear-gradient(135deg,#f0f8e8,#daedc8)}
+.blog-body{padding:1.4rem}
+.blog-tag{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);background:var(--green-bg);display:inline-block;padding:.2rem .6rem;border-radius:100px;margin-bottom:.65rem}
+.blog-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:500;color:var(--ink);line-height:1.32;margin-bottom:.5rem}
+.blog-excerpt{font-size:.82rem;color:var(--ink-mid);line-height:1.62;margin-bottom:.85rem;font-weight:300}
+.blog-meta{display:flex;justify-content:space-between;align-items:center;font-size:.72rem;color:var(--ink-ghost)}
+.blog-read{color:var(--green);font-weight:700;transition:opacity .2s}
+.blog-read:hover{opacity:.7}
+
+/* blog detail */
+.blog-detail{display:none;position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto}
+.blog-detail.show{display:block}
+.bd-nav{position:sticky;top:0;background:rgba(249,248,246,.93);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;padding:0 2rem;z-index:5}
+.bd-back-btn{display:inline-flex;align-items:center;gap:.4rem;font-size:.875rem;font-weight:600;color:var(--green);background:none;border:none;cursor:pointer;padding:.3rem .6rem;border-radius:8px;transition:background .15s}
+.bd-back-btn:hover{background:var(--green-bg)}
+.bd-back-btn svg{width:15px;height:15px;stroke:var(--green);stroke-width:2.5;fill:none}
+.bd-content{max-width:720px;margin:0 auto;padding:3rem 2rem 6rem}
+.bd-tag{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);background:var(--green-bg);display:inline-block;padding:.22rem .65rem;border-radius:100px;margin-bottom:.75rem}
+.bd-title{font-family:'Playfair Display',serif;font-size:clamp(1.75rem,4vw,2.7rem);color:var(--ink);line-height:1.1;margin-bottom:.8rem;font-weight:500}
+.bd-meta{font-size:.8rem;color:var(--ink-ghost);margin-bottom:2.5rem;padding-bottom:1.75rem;border-bottom:1px solid var(--border)}
+.bd-body{font-size:1.05rem;color:var(--ink-soft);line-height:1.85}
+.bd-body p{margin-bottom:1.3rem}
+.bd-body h2{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--ink);margin:2rem 0 .85rem;font-weight:500}
+.bd-body blockquote{border-left:3px solid var(--green);padding-left:1.25rem;margin:1.5rem 0;font-style:italic;color:var(--ink-soft);opacity:.88}
+.bd-body blockquote cite{display:block;font-style:normal;font-size:.8rem;color:var(--green);margin-top:.35rem;font-weight:600}
+
+/* ═══════════════════════════════
+   FAQ
+═══════════════════════════════ */
+.faq{padding:6rem 2.5rem;background:var(--bg2)}
+.faq-wrap{max-width:720px;margin:0 auto}
+.faq-head{text-align:center;margin-bottom:2.75rem}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{
+  width:100%;display:flex;justify-content:space-between;align-items:center;
+  padding:1.2rem 0;background:none;cursor:pointer;text-align:left;
+  font-size:.975rem;font-weight:500;color:var(--ink);gap:1rem;
+}
+.faq-ico{
+  width:24px;height:24px;border-radius:50%;background:var(--bg3);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;
+}
+.faq-item.open .faq-ico{background:var(--green);transform:rotate(45deg)}
+.faq-ico svg{width:11px;height:11px;stroke:var(--ink-mid);stroke-width:2.5;fill:none}
+.faq-item.open .faq-ico svg{stroke:#fff}
+.faq-a{display:none;padding:0 2rem 1.2rem 0;font-size:.9rem;color:var(--ink-mid);line-height:1.72;font-weight:300}
+.faq-item.open .faq-a{display:block}
+
+/* ═══════════════════════════════
+   CTA BANNER
+═══════════════════════════════ */
+.cta-banner{
+  padding:7rem 2.5rem;text-align:center;
+  background:linear-gradient(160deg,var(--ink) 0%,#0f2c26 100%);
+  position:relative;overflow:hidden;
+}
+.cta-banner::before{
+  content:'';position:absolute;inset:0;pointer-events:none;opacity:.04;
+  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
+  background-size:28px 28px;
+}
+.cta-orb1{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(30,122,106,.15),transparent 70%);top:-100px;left:-100px}
+.cta-orb2{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(212,112,74,.1),transparent 70%);bottom:-80px;right:-60px}
+.cta-inner{position:relative;z-index:1}
+.cta-tag{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green-xl);margin-bottom:1.2rem;display:flex;align-items:center;justify-content:center;gap:.5rem}
+.cta-tag::before,.cta-tag::after{content:'';width:30px;height:1px;background:var(--green-xl);opacity:.5}
+.cta-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.5rem);color:#fff;line-height:1.08;letter-spacing:-.02em;font-weight:500;margin-bottom:1rem;max-width:700px;margin-left:auto;margin-right:auto}
+.cta-sub{font-size:1rem;color:rgba(255,255,255,.5);max-width:480px;margin:0 auto 2.5rem;line-height:1.7;font-weight:300}
+.cta-btns{display:flex;gap:.85rem;justify-content:center;flex-wrap:wrap}
+.cta-trust{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-top:2rem}
+.cta-tr{font-size:.8rem;color:rgba(255,255,255,.35);display:flex;align-items:center;gap:.35rem}
+.cta-tr svg{width:13px;height:13px;stroke:var(--green-xl);stroke-width:2.5;fill:none;opacity:.7}
+
+/* ═══════════════════════════════
+   FOOTER
+═══════════════════════════════ */
+footer{background:var(--ink);padding:4rem 2.5rem 2rem}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.foot-brand-name{font-family:'Playfair Display',serif;font-size:1.25rem;color:#fff;margin-bottom:.65rem}
+.foot-brand-desc{font-size:.85rem;color:rgba(255,255,255,.38);line-height:1.68;font-weight:300;max-width:260px}
+.foot-col h5{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:1rem}
+.foot-col a{display:block;font-size:.875rem;color:rgba(255,255,255,.52);margin-bottom:.42rem;transition:color .18s;font-weight:300}
+.foot-col a:hover{color:#fff;cursor:pointer}
+.foot-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:1.75rem;border-top:1px solid rgba(255,255,255,.07);flex-wrap:wrap;gap:1rem}
+.foot-copy{font-size:.78rem;color:rgba(255,255,255,.28)}
+
+/* ═══════════════════════════════
+   PAYMENT MODAL
+═══════════════════════════════ */
+.pm-bg{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:300;display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(10px)}
+.pm-bg.show{display:flex}
+.pm-box{background:#fff;border-radius:var(--r-xl);padding:2.25rem;max-width:420px;width:100%;position:relative;box-shadow:var(--sh-l);max-height:90dvh;overflow-y:auto}
+.pm-box::-webkit-scrollbar{display:none}
+.pm-x{position:absolute;top:1rem;right:1rem;width:28px;height:28px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;border:none;font-size:.9rem;color:var(--ink-mid)}
+.pm-x:hover{background:var(--bg3)}
+.pm-badge{display:inline-flex;align-items:center;gap:.35rem;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green);background:var(--green-bg);border:1px solid var(--green-border);padding:.28rem .75rem;border-radius:100px;margin-bottom:1.1rem}
+.pm-title{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--ink);margin-bottom:.35rem;font-weight:500}
+.pm-sub{font-size:.875rem;color:var(--ink-mid);margin-bottom:1.6rem;line-height:1.6;font-weight:300}
+.fl{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:.38rem}
+.fi{
+  width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);
+  padding:.72rem .95rem;font-size:.9rem;color:var(--ink);outline:none;
+  transition:border-color .2s;-webkit-appearance:none;margin-bottom:.95rem;
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+.fi:focus{border-color:var(--green)}
+.fi::placeholder{color:var(--ink-ghost)}
+.stripe-wrap{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);padding:.8rem .95rem;margin-bottom:.8rem;transition:border-color .2s;min-height:50px;display:flex;align-items:center}
+.stripe-wrap.focus{border-color:var(--green)}
+#pm-err{font-size:.82rem;color:#dc2626;min-height:1rem;margin-bottom:.45rem}
+.pm-submit{width:100%;padding:.88rem;border-radius:var(--r);border:none;background:var(--green);color:#fff;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;margin-top:.2rem}
+.pm-submit:hover{background:var(--green-l)}
+.pm-submit:disabled{opacity:.5;cursor:not-allowed}
+.pm-lock{text-align:center;margin-top:.65rem;font-size:.75rem;color:var(--ink-ghost);display:flex;align-items:center;justify-content:center;gap:.32rem}
+
+/* ═══════════════════════════════
+   SCROLL REVEAL
+═══════════════════════════════ */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:translateY(0)}
+
+/* ═══════════════════════════════
+   RESPONSIVE
+═══════════════════════════════ */
+@media(max-width:1024px){
+  #nav{padding:0 1.5rem}
+  .hero{padding:7rem 1.5rem 4rem}
+  .hero-grid{grid-template-columns:1fr;gap:3rem}
+  .hero-right{display:none}
+  .nums-strip,.forwho,.how,.features,.testi,.faq,.cta-banner{padding:5rem 1.5rem}
+  .plans-page,.blog-page{padding:6rem 1.5rem 4rem}
+  .scenarios{grid-template-columns:1fr 1fr}
+  .how-grid{grid-template-columns:1fr}
+  .how-right{display:none}
+  .feat-mega{grid-template-columns:1fr}
+  .feat-small-row{grid-template-columns:1fr 1fr}
+  .testi-grid{grid-template-columns:1fr}
+  .plans-grid{grid-template-columns:1fr;max-width:420px}
+  .blog-grid{grid-template-columns:1fr 1fr}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:2rem}
+  .compare-table{display:none}
+}
+@media(max-width:768px){
+  #nav{padding:0 1rem}
+  .nav-links,.nav-actions{display:none}
+  .ham{display:flex;align-items:center}
+  .hero{padding:6rem 1rem 4rem}
+  .nums-inner{gap:1.5rem}
+  .num-sep{display:none}
+  .scenarios{grid-template-columns:1fr}
+  .not-for{grid-template-columns:1fr}
+  .feat-small-row{grid-template-columns:1fr}
+  .blog-grid{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr}
+  .foot-bottom{flex-direction:column;text-align:center}
+  .cta-btns{flex-direction:column;align-items:center}
+  .cta-trust{flex-direction:column;align-items:center;gap:1rem}
+}
+</style>
+</head>
+<body>
+
+<!-- PAYMENT MODAL -->
+<div class="pm-bg" id="pmBg">
+  <div class="pm-box">
+    <button class="pm-x" onclick="closePM()">✕</button>
+    <div class="pm-badge" id="pmBadge">GROWTH · 19€/MES</div>
+    <div class="pm-title">Empieza tu camino</div>
+    <div class="pm-sub">14 días gratis. Sin compromiso. Cancela cuando quieras.</div>
+    <label class="fl">Correo electrónico</label>
+    <input class="fi" id="pmEmail" type="email" placeholder="tu@email.com" autocomplete="email">
+    <label class="fl">Datos de pago</label>
+    <div class="stripe-wrap" id="stripeWrap">
+      <span style="font-size:.85rem;color:var(--ink-ghost)">Introduce tu clave Stripe en la variable STRIPE_PK</span>
+    </div>
+    <div id="pm-err"></div>
+    <button class="pm-submit" id="pmSubmit" onclick="submitPM()">Empezar 14 días gratis →</button>
+    <div class="pm-lock">🔒 Pago cifrado · Powered by Stripe</div>
+  </div>
+</div>
+
+<!-- BLOG DETAIL -->
+<div class="blog-detail" id="blogDetail">
+  <div class="bd-nav">
+    <button class="bd-back-btn" onclick="closeBlogDetail()">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Volver al blog
+    </button>
+  </div>
+  <div class="bd-content" id="bdContent"></div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo" onclick="showPage('home')">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm-1-5h2v2h-2zm0-8h2v6h-2z"/></svg>
+    </div>
+    <span class="logo-name">Serenai</span>
+  </div>
+  <div class="nav-links">
+    <span class="nav-link" id="nl-home"   onclick="showPage('home')">Inicio</span>
+    <span class="nav-link" id="nl-plans"  onclick="showPage('plans')">Planes</span>
+    <span class="nav-link" id="nl-blog"   onclick="showPage('blog')">Blog</span>
+  </div>
+  <div class="nav-actions">
+    <span class="nav-login">Iniciar sesión</span>
+    <button class="nav-cta" onclick="openPM('growth','Growth · 19€/mes')">Empezar gratis</button>
+  </div>
+  <button class="ham" onclick="toggleMob()" aria-label="Menú">
+    <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+  </button>
+</nav>
+<div class="mob-menu" id="mobMenu">
+  <span class="mob-link" onclick="showPage('home');closeMob()">Inicio</span>
+  <span class="mob-link" onclick="showPage('plans');closeMob()">Planes</span>
+  <span class="mob-link" onclick="showPage('blog');closeMob()">Blog</span>
+  <div class="mob-divider"></div>
+  <span class="mob-link" style="color:var(--green);font-weight:700" onclick="openPM('growth','Growth · 19€/mes');closeMob()">→ Empezar gratis — 14 días</span>
+</div>
+
+<!-- ═══════════════════════════════
+     HOME PAGE
+═══════════════════════════════ -->
+<div class="page active" id="pg-home">
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <!-- LEFT -->
+    <div>
+      <div class="hero-lede">Tu guía de bienestar mental con IA</div>
+      <h1 class="h1 hero-title">Alguien que<br>te escucha<br>de <em>verdad</em></h1>
+      <p class="lead hero-body">Serenai analiza lo que sientes, hace las preguntas que nadie te hace y te guía en un proceso real de crecimiento. Disponible 24h, sin listas de espera.</p>
+      <div class="hero-ctas">
+        <button class="btn btn-primary" onclick="openPM('growth','Growth · 19€/mes')">
+          Empezar gratis — 14 días
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <button class="btn btn-outline" onclick="scrollTo({top:document.getElementById('forwho').offsetTop-80,behavior:'smooth'})">¿Es para mí?</button>
+      </div>
+      <div class="hero-social">
+        <div class="social-stat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span><strong>47.000+</strong> personas ayudadas</span>
+        </div>
+        <div class="social-stat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span><strong>4.8★</strong> valoración media</span>
+        </div>
+        <div class="social-stat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>Disponible <strong>24/7</strong></span>
+        </div>
+      </div>
+    </div>
+    <!-- RIGHT MOCKUP -->
+    <div class="hero-right">
+      <div class="mockup-card">
+        <div class="mockup-topbar">
+          <div class="mockup-av">🌿</div>
+          <div>
+            <div class="mockup-title">Serenai</div>
+            <div class="mockup-sub">Disponible ahora</div>
+          </div>
+        </div>
+        <div class="mockup-body" style="display:flex;flex-direction:column;gap:.7rem">
+          <div class="msg-in">Hola 👋 Veo que llevas días con mucha carga. ¿Quieres contarme qué está pasando?</div>
+          <div class="msg-out">Es que no consigo desconectar del trabajo. Llego a casa y sigo pensando en todo lo que tengo pendiente.</div>
+          <div class="msg-in">Eso tiene mucho sentido. Cuando el cerebro no tiene una señal clara de "ya puedes parar", sigue en modo alerta. ¿Tienes algún ritual que marque el fin de tu jornada laboral?</div>
+          <div class="typing-row"><div class="td"></div><div class="td"></div><div class="td"></div></div>
+          <div class="msg-ts">Serenai escucha · analiza · acompaña</div>
+        </div>
+        <div class="mockup-input">
+          <div class="mock-inp">Escribe tu pensamiento...</div>
+          <div class="mock-send"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+        </div>
+      </div>
+      <div class="chip chip-1">
+        <span class="chip-dot" style="background:#22c55e"></span>
+        <span>Progreso semanal +34%</span>
+      </div>
+      <div class="chip chip-2">
+        <span>💬</span>
+        <span>2.847 sesiones hoy</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NUMBERS STRIP -->
+<div class="nums-strip reveal">
+  <div class="nums-inner">
+    <div class="num-item"><div class="num-val">47k+</div><div class="num-lbl">Personas ayudadas</div></div>
+    <div class="num-sep"></div>
+    <div class="num-item"><div class="num-val">4.8 ★</div><div class="num-lbl">Valoración media</div></div>
+    <div class="num-sep"></div>
+    <div class="num-item"><div class="num-val">94%</div><div class="num-lbl">Mejoran en 30 días</div></div>
+    <div class="num-sep"></div>
+    <div class="num-item"><div class="num-val">24/7</div><div class="num-lbl">Siempre disponible</div></div>
+    <div class="num-sep"></div>
+    <div class="num-item"><div class="num-val">&lt;30s</div><div class="num-lbl">Respuesta inmediata</div></div>
+  </div>
+</div>
+
+<!-- PARA QUIÉN ES -->
+<section class="forwho" id="forwho">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="tag-label">¿Para quién es Serenai?</div>
+      <h2 class="h2">Reconoce tu <em>situación</em></h2>
+      <p class="lead">Serenai no sirve para todo el mundo. Está diseñada para momentos concretos que muchas personas viven pero pocos saben manejar solos.</p>
+    </div>
+    <div class="scenarios">
+      <div class="sc reveal">
+        <div class="sc-em">😰</div>
+        <div class="sc-who">Ansiedad · Estrés crónico</div>
+        <div class="sc-title">"Mi cabeza no para. Me agobio por cosas que sé que no son para tanto."</div>
+        <div class="sc-body">Tu mente siempre está en alerta. No puedes desconectar aunque quieras. Sientes que el estrés se acumula y a veces ni sabes exactamente por qué.</div>
+        <div class="sc-tag"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Serenai identifica los patrones que generan esa espiral y te enseña a interrumpirlos.</div>
+      </div>
+      <div class="sc reveal">
+        <div class="sc-em">🔥</div>
+        <div class="sc-who">Burnout · Agotamiento profundo</div>
+        <div class="sc-title">"Me levanto cansado antes de empezar. Ya no me motiva nada de lo que antes me llenaba."</div>
+        <div class="sc-body">Has dado tanto durante tanto tiempo que te has vaciado. No es pereza ni debilidad — es agotamiento real que necesita atención específica.</div>
+        <div class="sc-tag"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Serenai te acompaña en recuperar energía y reconectar con lo que importa.</div>
+      </div>
+      <div class="sc reveal">
+        <div class="sc-em">💔</div>
+        <div class="sc-who">Ruptura · Pérdida · Duelo</div>
+        <div class="sc-title">"Sé que el tiempo lo cura todo, pero ahora mismo cada día es un esfuerzo enorme."</div>
+        <div class="sc-body">Una ruptura, la muerte de alguien querido o el fin de algo que era parte de ti. El duelo no tiene horario ni manual de instrucciones.</div>
+        <div class="sc-tag"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Serenai escucha sin presión, a tu ritmo, sin decirte cómo deberías sentirte.</div>
+      </div>
+      <div class="sc reveal">
+        <div class="sc-em">🪞</div>
+        <div class="sc-who">Autoestima · Inseguridad</div>
+        <div class="sc-title">"Me comparo constantemente con los demás y siempre salgo perdiendo. Nunca soy suficiente."</div>
+        <div class="sc-body">Una voz interna muy crítica que te sabotea antes de empezar. Que te dice que no mereces, que no puedes, que los demás ven tus defectos.</div>
+        <div class="sc-tag"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Serenai trabaja esa conversación interna para que deje de ser tu enemiga.</div>
+      </div>
+      <div class="sc reveal">
+        <div class="sc-em">🌪️</div>
+        <div class="sc-who">Bloqueos · Decisiones difíciles</div>
+        <div class="sc-title">"Sé que tengo que cambiar algo pero no doy el paso. Me paralizo y luego me siento peor."</div>
+        <div class="sc-body">Estás en un cruce de caminos — en el trabajo, en tus relaciones, en tu vida. El miedo a equivocarte te mantiene quieto.</div>
+        <div class="sc-tag"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Serenai te ayuda a clarificar qué quieres y a diseñar pasos concretos sin abrumarte.</div>
+      </div>
+      <div class="sc reveal">
+        <div class="sc-em">🔁</div>
+        <div class="sc-who">Patrones · Relaciones</div>
+        <div class="sc-title">"Siempre acabo en los mismos conflictos con las mismas personas. Algo falla en cómo me relaciono."</div>
+        <div class="sc-body">Cambias de trabajo, de pareja, de ciudad — y los mismos problemas vuelven a aparecer. No es mala suerte. Es un patrón que se puede cambiar.</div>
+        <div class="sc-tag"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Serenai te ayuda a entender qué dinámicas repites y cómo salir de ellas.</div>
+      </div>
+    </div>
+    <div class="not-for reveal">
+      <div class="nf-icon">⚠️</div>
+      <div>
+        <div class="nf-title">Serenai no es para todo el mundo — y eso es importante ser honesto</div>
+        <div class="nf-body">Serenai <strong>no reemplaza a un psicólogo ni a un psiquiatra</strong>. Si estás en una crisis aguda, tienes pensamientos de hacerte daño o sufres un trastorno mental que requiere tratamiento clínico, necesitas apoyo profesional humano. En España: <a href="tel:717003717">Teléfono de la Esperanza 717 003 717</a> y el <a href="tel:024">Teléfono 024</a> para conducta suicida. Serenai es una herramienta de bienestar y acompañamiento, no un servicio de salud mental clínica.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CÓMO FUNCIONA -->
+<section class="how" id="how">
+  <div class="wrap how-grid">
+    <div>
+      <div class="tag-label reveal">Cómo funciona</div>
+      <h2 class="h2 reveal" style="margin:.65rem 0 .85rem">Un proceso <em>real</em>,<br>no una app de meditación</h2>
+      <p class="lead reveal" style="max-width:480px;margin-bottom:2.75rem">Serenai no te da frases motivacionales. Hace preguntas que abren perspectiva y genera procesos de coaching personalizados para tu situación.</p>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-line"></div>
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Cuéntanos qué está pasando</div>
+            <div class="step-body">Sin formularios. Escribe cómo te sientes o qué situación estás viviendo. Serenai entiende el contexto completo y responde en segundos.</div>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-line"></div>
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Serenai hace las preguntas correctas</div>
+            <div class="step-body">No respuestas genéricas. Detecta patrones de pensamiento, hace preguntas que abren perspectiva y te ayuda a ver lo que estás evitando ver.</div>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-line"></div>
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Registras tus escenarios difíciles</div>
+            <div class="step-body">Apunta situaciones concretas — un conflicto, una decisión, una emoción. Serenai las analiza y genera un proceso de coaching paso a paso adaptado a tu caso.</div>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-line"></div>
+          <div class="step-num">4</div>
+          <div>
+            <div class="step-title">Sigues tu protocolo personalizado</div>
+            <div class="step-body">Programas basados en psicología cognitiva, adaptados a tu situación específica y a lo que has compartido. No un plan genérico — el tuyo.</div>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">5</div>
+          <div>
+            <div class="step-title">Ves el cambio semana a semana</div>
+            <div class="step-body">Tu dashboard muestra tu evolución. Los patrones que antes no veías, ahora los reconoces. Los mismos problemas se vuelven más manejables.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="how-right reveal">
+      <div class="how-dash">
+        <div class="dash-bar">
+          <div class="dash-dot" style="background:#f87171"></div>
+          <div class="dash-dot" style="background:#fbbf24;margin-left:4px"></div>
+          <div class="dash-dot" style="background:#34d399;margin-left:4px"></div>
+          <span class="dash-title">Dashboard Serenai</span>
+        </div>
+        <div class="dash-metrics">
+          <div class="dm"><div class="dm-lbl">Bienestar</div><div class="dm-val" style="color:#38c4ae">78</div><div class="dm-sub dm-up">↑ +12 este mes</div></div>
+          <div class="dm"><div class="dm-lbl">Estado</div><div class="dm-val" style="font-size:1.1rem;margin-top:.1rem;color:#fff">Estable</div><div class="dm-sub dm-up">↓ 23% estrés</div></div>
+          <div class="dm"><div class="dm-lbl">Sesiones</div><div class="dm-val" style="color:#fff">47</div><div class="dm-sub dm-up">↑ 3 esta sem.</div></div>
+          <div class="dm"><div class="dm-lbl">Protocolo</div><div class="dm-val" style="font-size:1.1rem;color:#fff">Día 14</div><div class="dm-sub" style="color:rgba(255,255,255,.4)">67% completado</div></div>
+        </div>
+        <div class="dash-chart">
+          <div class="dc-head">Estado emocional · últimos 7 días</div>
+          <div class="bars-row" id="dashBars"></div>
+        </div>
+        <div class="dash-insight">
+          <div class="di-label">✦ Insight de Serenai</div>
+          <div class="di-text">Detectamos agitación recurrente los domingos. El futuro imaginado perturba tu presente. Activando protocolo de regulación.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FUNCIONALIDADES COMPLETAS -->
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="feat-intro reveal">
+      <div class="tag-label" style="margin-bottom:.8rem">Funcionalidades</div>
+      <h2 class="h2" style="margin-bottom:.85rem">Todo lo que necesitas.<br><em>Nada que no uses.</em></h2>
+      <p class="lead">Cada función está diseñada para una necesidad real. Sin adornos, sin features que nunca abrirás.</p>
+    </div>
+
+    <!-- MEGA FEATURES -->
+    <div class="feat-mega">
+      <div class="feat-mega-card reveal">
+        <div class="feat-icon-box fi-green">💬</div>
+        <div>
+          <div class="feat-name">Conversaciones con IA — ARIA</div>
+          <div class="feat-desc">Tu guía disponible 24 horas. No un chatbot genérico — una IA entrenada en psicología cognitiva que recuerda todo lo que has contado, detecta patrones en tu lenguaje y hace preguntas que abren perspectiva. Sin límites de mensajes en los planes de pago.</div>
+          <div class="feat-pills">
+            <span class="feat-pill">Memoria persistente</span>
+            <span class="feat-pill">Sin límite de mensajes</span>
+            <span class="feat-pill p">Disponible 24/7</span>
+          </div>
+        </div>
+      </div>
+      <div class="feat-mega-card reveal">
+        <div class="feat-icon-box fi-peach">📋</div>
+        <div>
+          <div class="feat-name">Escenarios de vida — Proceso de coaching</div>
+          <div class="feat-desc">Registra situaciones difíciles concretas: un conflicto, una decisión, una emoción que no entiendes. Serenai las analiza y genera un proceso de coaching paso a paso adaptado específicamente a tu caso, con ejercicios prácticos y seguimiento de progreso.</div>
+          <div class="feat-pills">
+            <span class="feat-pill p">Análisis IA profundo</span>
+            <span class="feat-pill n">Proceso paso a paso</span>
+            <span class="feat-pill l">Seguimiento activo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feat-mega" style="margin-bottom:1rem">
+      <div class="feat-mega-card reveal">
+        <div class="feat-icon-box fi-navy">📈</div>
+        <div>
+          <div class="feat-name">Dashboard de bienestar personal</div>
+          <div class="feat-desc">Visualiza tu evolución semana a semana. Bienestar Score™, estado emocional, progreso en protocolos y alertas predictivas cuando Serenai detecta un patrón antes de que se convierta en problema. Tus datos, tu evolución, siempre visible.</div>
+          <div class="feat-pills">
+            <span class="feat-pill n">Bienestar Score™</span>
+            <span class="feat-pill">Alertas predictivas</span>
+            <span class="feat-pill p">Evolución semanal</span>
+          </div>
+        </div>
+      </div>
+      <div class="feat-mega-card reveal">
+        <div class="feat-icon-box fi-lilac">🎯</div>
+        <div>
+          <div class="feat-name">Protocolos de transformación</div>
+          <div class="feat-desc">Programas de 21 a 90 días para situaciones específicas: ansiedad, burnout, duelo, bloqueos, autoestima, relaciones. Basados en psicología cognitivo-conductual, con ejercicios diarios, diario guiado y métricas de progreso reales.</div>
+          <div class="feat-pills">
+            <span class="feat-pill l">6 protocolos incluidos</span>
+            <span class="feat-pill">21 a 90 días</span>
+            <span class="feat-pill n">Basado en evidencia</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feat-small-row">
+      <div class="feat-small reveal">
+        <div class="fs-icon">📔</div>
+        <div class="fs-name">Diario emocional con IA</div>
+        <div class="fs-body">Escribe lo que sientes. Serenai analiza cada entrada, identifica el estado emocional y te ofrece una perspectiva que tu mente sola no tiene.</div>
+      </div>
+      <div class="feat-small reveal">
+        <div class="fs-icon">🧬</div>
+        <div class="fs-name">Perfil psicológico</div>
+        <div class="fs-body">Tu mapa interior: patrones de pensamiento, estilo de afrontamiento, valores, fortalezas. Se actualiza y enriquece con cada conversación.</div>
+      </div>
+      <div class="feat-small reveal">
+        <div class="fs-icon">🔒</div>
+        <div class="fs-name">100% privado</div>
+        <div class="fs-body">Tus conversaciones son tuyas. Cifrado de extremo a extremo. Sin venta de datos. Sin publicidad. Sin acceso de terceros.</div>
+      </div>
+      <div class="feat-small reveal">
+        <div class="fs-icon">📱</div>
+        <div class="fs-name">Multiplataforma</div>
+        <div class="fs-body">Funciona en cualquier dispositivo desde el navegador. App nativa iOS y Android en desarrollo.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testi">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="tag-label">Testimonios</div>
+      <h2 class="h2" style="margin:.65rem 0 0">Lo que dicen <em>personas reales</em></h2>
+    </div>
+    <div class="testi-grid">
+      <div class="tc reveal">
+        <div class="tc-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+        <div class="tc-body">"Llevaba meses con ansiedad que no sabía explicar ni al médico. Con Serenai conseguí poner nombre a lo que sentía en la primera semana. No es magia — es que finalmente alguien me hacía las preguntas correctas."</div>
+        <div class="tc-person">
+          <div class="tc-av" style="background:linear-gradient(135deg,var(--green),var(--green-xl))">ML</div>
+          <div><div class="tc-name">María L.</div><div class="tc-role">Diseñadora · Madrid</div></div>
+        </div>
+      </div>
+      <div class="tc reveal">
+        <div class="tc-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+        <div class="tc-body">"Pasé un burnout muy fuerte. Estaba en lista de espera para terapia 3 meses y Serenai fue lo que me mantuvo a flote. No reemplaza a un psicólogo, pero cuando necesitas apoyo ahora — no en tres meses — es una diferencia enorme."</div>
+        <div class="tc-person">
+          <div class="tc-av" style="background:linear-gradient(135deg,var(--navy),var(--navy-l))">CR</div>
+          <div><div class="tc-name">Carlos R.</div><div class="tc-role">Ingeniero · Barcelona</div></div>
+        </div>
+      </div>
+      <div class="tc reveal">
+        <div class="tc-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+        <div class="tc-body">"Después de mi ruptura podía escribir a las 3am sin molestar a nadie. Eso fue decisivo. El proceso de escenarios me ayudó a entender por qué siempre acabo en las mismas situaciones."</div>
+        <div class="tc-person">
+          <div class="tc-av" style="background:linear-gradient(135deg,var(--peach),var(--peach-l))">SG</div>
+          <div><div class="tc-name">Sofía G.</div><div class="tc-role">Profesora · Valencia</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+  <div class="faq-wrap">
+    <div class="faq-head reveal">
+      <div class="tag-label" style="margin:0 auto 1rem">Preguntas frecuentes</div>
+      <h2 class="h2">Lo que nos suelen <em>preguntar</em></h2>
+    </div>
+    <div id="faqHome">
+      <div class="faq-item"><button class="faq-q" onclick="faqToggle(this)">¿Es lo mismo que ir a un psicólogo?<span class="faq-ico"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="faq-a">No, y es importante entenderlo. Serenai es una herramienta de bienestar y acompañamiento, no un servicio de salud mental clínica. No diagnostica ni trata trastornos mentales. Lo que sí hace es estar cuando un psicólogo no puede — a las 3am, en el momento exacto que lo necesitas.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="faqToggle(this)">¿Mis conversaciones son privadas?<span class="faq-ico"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="faq-a">Sí. Cifrado de extremo a extremo. No vendemos datos a terceros ni los usamos para publicidad. Puedes eliminar tu historial en cualquier momento.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="faqToggle(this)">¿Cómo funcionan los "Escenarios"?<span class="faq-ico"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="faq-a">Describes una situación difícil — un conflicto, una emoción que no entiendes, una decisión que evitas. Serenai analiza lo que describes, identifica los patrones implicados y genera un proceso de acompañamiento personalizado con pasos concretos para tu situación.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="faqToggle(this)">¿Puedo cancelar cuando quiera?<span class="faq-ico"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="faq-a">Sí, sin preguntas ni penalizaciones. Desde tu panel de usuario. Si cancelas, mantienes el acceso hasta el final del período pagado.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="faqToggle(this)">¿Qué pasa si estoy en crisis?<span class="faq-ico"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="faq-a">Serenai detecta señales de crisis y proporciona inmediatamente los recursos de emergencia. En España: Teléfono de la Esperanza 717 003 717 y el Teléfono 024. Serenai no gestiona crisis — conecta con quien sí puede.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section class="cta-banner">
+  <div class="cta-orb1"></div><div class="cta-orb2"></div>
+  <div class="wrap cta-inner">
+    <div class="cta-tag">Empieza hoy</div>
+    <h2 class="cta-title">El mejor momento<br>para empezar es <em>ahora</em></h2>
+    <p class="cta-sub">14 días gratis. Sin tarjeta. Si en dos semanas no notas ninguna diferencia, cancelar es con un clic.</p>
+    <div class="cta-btns">
+      <button class="btn btn-white" onclick="openPM('growth','Growth · 19€/mes')">Empezar gratis — 14 días</button>
+      <button class="btn btn-outline" style="border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.65)" onclick="showPage('plans')">Ver planes</button>
+    </div>
+    <div class="cta-trust">
+      <div class="cta-tr"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>Sin tarjeta de crédito</div>
+      <div class="cta-tr"><svg viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>100% privado</div>
+      <div class="cta-tr"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Cancela cuando quieras</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER (home) -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand-name">Serenai</div>
+        <div class="foot-brand-desc">Tu guía de bienestar mental con inteligencia artificial. Disponible cuando más lo necesitas.</div>
+      </div>
+      <div class="foot-col">
+        <h5>Producto</h5>
+        <a onclick="scrollTo({top:document.getElementById('how').offsetTop-80,behavior:'smooth'});showPage('home')">Cómo funciona</a>
+        <a onclick="scrollTo({top:document.getElementById('features').offsetTop-80,behavior:'smooth'});showPage('home')">Funcionalidades</a>
+        <a onclick="showPage('plans')">Planes</a>
+      </div>
+      <div class="foot-col">
+        <h5>Recursos</h5>
+        <a onclick="showPage('blog')">Blog</a>
+        <a onclick="scrollTo({top:document.getElementById('forwho').offsetTop-80,behavior:'smooth'});showPage('home')">¿Para quién?</a>
+        <a>Centro de ayuda</a>
+      </div>
+      <div class="foot-col">
+        <h5>Legal</h5>
+        <a>Privacidad</a>
+        <a>Términos de uso</a>
+        <a>Cookies</a>
+        <a>Contacto</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div class="foot-copy">© 2025 Serenai. Todos los derechos reservados.</div>
+      <div class="foot-copy">Herramienta de bienestar · No es un servicio médico</div>
+    </div>
+  </div>
+</footer>
+
+</div><!-- /pg-home -->
+
+<!-- ═══════════════════════════════
+     PLANS PAGE
+═══════════════════════════════ -->
+<div class="page" id="pg-plans">
+<div class="plans-page">
+  <div class="wrap">
+    <div class="plans-head reveal">
+      <div class="tag-label" style="margin:0 auto .8rem">Planes</div>
+      <h2 class="h2" style="margin-bottom:.85rem">Simple y <em>transparente</em></h2>
+      <p class="lead">Empieza gratis. Sin tarjeta de crédito. Cancela cuando quieras.</p>
+    </div>
+
+    <!-- Monthly/Yearly toggle -->
+    <div class="toggle-wrap reveal">
+      <span class="toggle-lbl active" id="tLblM">Mensual</span>
+      <div class="toggle-switch" id="toggleSw" onclick="toggleBilling()">
+        <div class="toggle-knob" id="toggleKnob"></div>
+      </div>
+      <span class="toggle-lbl" id="tLblY">Anual</span>
+      <span class="save-badge" id="saveBadge" style="display:none">Ahorra hasta 36%</span>
+    </div>
+
+    <div class="plans-grid">
+      <!-- STARTER -->
+      <div class="plan-card starter reveal">
+        <div class="plan-tier">Starter</div>
+        <div class="plan-tagline">Para explorar Serenai sin compromiso</div>
+        <div class="plan-price">0<sup>€</sup></div>
+        <div class="plan-period">Gratis · Para siempre</div>
+        <ul class="plan-feats">
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Perfil psicológico básico</li>
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>10 conversaciones con IA / mes</li>
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Registro de 3 escenarios / mes</li>
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Dashboard básico · 3 métricas</li>
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Acceso al blog y recursos</li>
+          <li class="pf dim"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Conversaciones ilimitadas</li>
+          <li class="pf dim"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Protocolos de transformación</li>
+          <li class="pf dim"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Análisis profundo de escenarios</li>
+        </ul>
+        <button class="plan-btn plan-btn-outline" onclick="openPM('free','Starter — Gratis')">Empezar gratis</button>
+        <div class="plan-note">Sin tarjeta requerida</div>
+      </div>
+      <!-- GROWTH (featured) -->
+      <div class="plan-card growth featured reveal">
+        <div class="plan-top-badge">Más popular</div>
+        <div class="plan-tier">Growth</div>
+        <div class="plan-tagline">Para transformarte de verdad</div>
+        <div class="plan-price" id="gprice">19<sup>€</sup></div>
+        <div class="plan-period" id="gperiod">/mes · Facturado mensualmente</div>
+        <ul class="plan-feats">
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Todo en Starter</li>
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Conversaciones ilimitadas con IA</li>
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Escenarios ilimitados + proceso completo</li>
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>6 protocolos de transformación</li>
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Diario emocional con análisis IA</li>
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Dashboard avanzado + alertas</li>
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Perfil psicológico completo · 12 dimensiones</li>
+          <li class="pf dim"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Sesiones con psicólogo humano</li>
+        </ul>
+        <button class="plan-btn plan-btn-white" onclick="openPM('growth','Growth · 19€/mes')">Empezar Growth</button>
+        <div class="plan-note">🔒 Pago seguro con Stripe</div>
+      </div>
+      <!-- PRO -->
+      <div class="plan-card pro reveal">
+        <div class="plan-tier">Pro</div>
+        <div class="plan-tagline">Con acompañamiento humano real</div>
+        <div class="plan-price" id="pprice">39<sup>€</sup></div>
+        <div class="plan-period" id="pperiod">/mes · Facturado mensualmente</div>
+        <ul class="plan-feats">
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Todo en Growth</li>
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>2 sesiones/mes con psicólogo humano</li>
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Análisis con wearables · biométrico</li>
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Informe mensual en PDF</li>
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Coach personalizado asignado</li>
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Comunidad privada Pro</li>
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Acceso anticipado a nuevas funciones</li>
+          <li class="pf"><span class="pf-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Garantía de progreso 90 días</li>
+        </ul>
+        <button class="plan-btn plan-btn-green" onclick="openPM('pro','Pro · 39€/mes')">Empezar Pro</button>
+        <div class="plan-note">🔒 Pago seguro con Stripe</div>
+      </div>
+    </div>
+
+    <!-- COMPARE TABLE -->
+    <div class="compare-wrap reveal">
+      <div class="compare-head">
+        <h3 class="h3">Comparativa completa</h3>
+      </div>
+      <table class="compare-table ct">
+        <thead>
+          <tr>
+            <th>Funcionalidad</th>
+            <th>Starter</th>
+            <th class="hl">Growth</th>
+            <th>Pro</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Conversaciones con IA</td><td>10 / mes</td><td class="hl">Ilimitadas</td><td>Ilimitadas</td></tr>
+          <tr><td>Registro de escenarios</td><td>3 / mes</td><td class="hl">Ilimitados</td><td>Ilimitados</td></tr>
+          <tr><td>Proceso de coaching por escenario</td><td class="check-no">—</td><td class="hl check-yes">✓</td><td class="check-yes">✓</td></tr>
+          <tr><td>Protocolos de transformación</td><td class="check-no">—</td><td class="hl check-yes">✓ 6 protocolos</td><td class="check-yes">✓ 6 protocolos</td></tr>
+          <tr><td>Diario emocional con análisis IA</td><td class="check-no">—</td><td class="hl check-yes">✓</td><td class="check-yes">✓</td></tr>
+          <tr><td>Dashboard bienestar</td><td class="check-partial">Básico</td><td class="hl check-yes">✓ Completo</td><td class="check-yes">✓ Avanzado</td></tr>
+          <tr><td>Perfil psicológico</td><td class="check-partial">5 dimensiones</td><td class="hl check-yes">✓ 12 dimensiones</td><td class="check-yes">✓ 12 dimensiones</td></tr>
+          <tr><td>Alertas predictivas</td><td class="check-no">—</td><td class="hl check-yes">✓</td><td class="check-yes">✓</td></tr>
+          <tr><td>Sesiones con psicólogo humano</td><td class="check-no">—</td><td class="hl check-no">—</td><td class="check-yes">✓ 2 / mes</td></tr>
+          <tr><td>Coach personalizado</td><td class="check-no">—</td><td class="hl check-no">—</td><td class="check-yes">✓</td></tr>
+          <tr><td>Análisis biométrico</td><td class="check-no">—</td><td class="hl check-no">—</td><td class="check-yes">✓</td></tr>
+          <tr><td>Garantía 90 días</td><td class="check-no">—</td><td class="hl check-no">—</td><td class="check-yes">✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<footer>
+  <div class="wrap">
+    <div class="foot-bottom" style="border-top:none;padding-top:0">
+      <div class="foot-copy">© 2025 Serenai · <a style="color:rgba(255,255,255,.4);cursor:pointer" onclick="showPage('home')">Inicio</a> · <a style="color:rgba(255,255,255,.4);cursor:pointer" onclick="showPage('blog')">Blog</a></div>
+      <div class="foot-copy">Herramienta de bienestar · No es un servicio médico</div>
+    </div>
+  </div>
+</footer>
+</div><!-- /pg-plans -->
+
+<!-- ═══════════════════════════════
+     BLOG PAGE
+═══════════════════════════════ -->
+<div class="page" id="pg-blog">
+<div class="blog-detail" id="blogDetail">
+  <div class="bd-nav">
+    <button class="bd-back-btn" onclick="closeBlogDetail()">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Volver
+    </button>
+  </div>
+  <div class="bd-content" id="bdContent"></div>
+</div>
+
+<div class="blog-page">
+  <div class="wrap">
+    <div class="blog-head reveal">
+      <div class="tag-label" style="margin:0 auto .8rem">Blog</div>
+      <h2 class="h2" style="margin-bottom:.85rem">Recursos para <em>entenderte</em> mejor</h2>
+      <p class="lead">Artículos basados en psicología real, sin frases de autoayuda vacías.</p>
+    </div>
+    <div class="blog-cats reveal">
+      <button class="blog-cat-btn active" onclick="filterBlog(this,'all')">Todos</button>
+      <button class="blog-cat-btn" onclick="filterBlog(this,'ansiedad')">Ansiedad</button>
+      <button class="blog-cat-btn" onclick="filterBlog(this,'burnout')">Burnout</button>
+      <button class="blog-cat-btn" onclick="filterBlog(this,'relaciones')">Relaciones</button>
+      <button class="blog-cat-btn" onclick="filterBlog(this,'autoestima')">Autoestima</button>
+    </div>
+    <div class="blog-grid" id="blogGrid">
+      <div class="blog-card" data-cat="ansiedad" onclick="openBlogPost('ansiedad')">
+        <div class="blog-thumb bt0">😰</div>
+        <div class="blog-body">
+          <div class="blog-tag">Ansiedad</div>
+          <div class="blog-title">Por qué tu cerebro no puede "simplemente calmarse" — y qué sí funciona</div>
+          <div class="blog-excerpt">La ansiedad no es debilidad ni exageración. Es tu sistema nervioso haciendo lo que está diseñado para hacer, en el momento equivocado.</div>
+          <div class="blog-meta"><span>12 Abr 2025 · 7 min</span><span class="blog-read">Leer →</span></div>
+        </div>
+      </div>
+      <div class="blog-card" data-cat="burnout" onclick="openBlogPost('burnout')">
+        <div class="blog-thumb bt1">🔥</div>
+        <div class="blog-body">
+          <div class="blog-tag">Burnout</div>
+          <div class="blog-title">No estás cansado de trabajar. Estás cansado de luchar contra ti mismo.</div>
+          <div class="blog-excerpt">El burnout tiene una cara visible y una invisible. Hasta que no trabajas la segunda, la primera no mejora.</div>
+          <div class="blog-meta"><span>5 Abr 2025 · 9 min</span><span class="blog-read">Leer →</span></div>
+        </div>
+      </div>
+      <div class="blog-card" data-cat="relaciones" onclick="openBlogPost('relaciones')">
+        <div class="blog-thumb bt2">🤝</div>
+        <div class="blog-body">
+          <div class="blog-tag">Relaciones</div>
+          <div class="blog-title">Los 3 patrones que arruinan todas tus relaciones (y cómo salir de ellos)</div>
+          <div class="blog-excerpt">No es mala suerte. No es que todas las personas sean complicadas. Hay algo que se repite — y está en ti.</div>
+          <div class="blog-meta"><span>28 Mar 2025 · 8 min</span><span class="blog-read">Leer →</span></div>
+        </div>
+      </div>
+      <div class="blog-card" data-cat="autoestima" onclick="openBlogPost('autoestima')">
+        <div class="blog-thumb bt3">🪞</div>
+        <div class="blog-body">
+          <div class="blog-tag">Autoestima</div>
+          <div class="blog-title">La voz que te sabotea: cómo identificar tu crítico interno y dejar de obedecerle</div>
+          <div class="blog-excerpt">Todos tenemos una voz que nos dice que no somos suficientes. El problema no es tenerla — es creerla sin cuestionarla.</div>
+          <div class="blog-meta"><span>20 Mar 2025 · 6 min</span><span class="blog-read">Leer →</span></div>
+        </div>
+      </div>
+      <div class="blog-card" data-cat="ansiedad" onclick="openBlogPost('escenarios')">
+        <div class="blog-thumb bt4">📋</div>
+        <div class="blog-body">
+          <div class="blog-tag">Ansiedad</div>
+          <div class="blog-title">Cómo registrar un escenario difícil para sacarle el máximo provecho</div>
+          <div class="blog-excerpt">La diferencia entre desahogarse y crecer está en cómo estructuras lo que sientes. Te explicamos el método.</div>
+          <div class="blog-meta"><span>14 Mar 2025 · 5 min</span><span class="blog-read">Leer →</span></div>
+        </div>
+      </div>
+      <div class="blog-card" data-cat="burnout" onclick="openBlogPost('decision')">
+        <div class="blog-thumb bt5">🌪️</div>
+        <div class="blog-body">
+          <div class="blog-tag">Bloqueos</div>
+          <div class="blog-title">Parálisis por análisis: por qué no puedes tomar la decisión y qué hacer</div>
+          <div class="blog-excerpt">Cuanta más información buscas, más confundido te sientes. No es un problema de datos — es un problema de miedo.</div>
+          <div class="blog-meta"><span>7 Mar 2025 · 7 min</span><span class="blog-read">Leer →</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<footer>
+  <div class="wrap">
+    <div class="foot-bottom" style="border-top:none;padding-top:0">
+      <div class="foot-copy">© 2025 Serenai · <a style="color:rgba(255,255,255,.4);cursor:pointer" onclick="showPage('home')">Inicio</a> · <a style="color:rgba(255,255,255,.4);cursor:pointer" onclick="showPage('plans')">Planes</a></div>
+      <div class="foot-copy">Herramienta de bienestar · No es un servicio médico</div>
+    </div>
+  </div>
+</footer>
+</div><!-- /pg-blog -->
+
+<script>
+/* ─── PAGE SYSTEM ─── */
+var CUR='home';
+function showPage(id){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  document.getElementById('pg-'+id).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(function(l){l.classList.remove('active')});
+  var nl=document.getElementById('nl-'+id);
+  if(nl)nl.classList.add('active');
+  CUR=id;
+  window.scrollTo(0,0);
+  document.getElementById('blogDetail').classList.remove('show');
+  closeMob();
+}
+
+/* ─── NAV SCROLL ─── */
+window.addEventListener('scroll',function(){
+  document.getElementById('nav').classList.toggle('raised',window.scrollY>20);
+});
+
+/* ─── MOBILE MENU ─── */
+function toggleMob(){document.getElementById('mobMenu').classList.toggle('show')}
+function closeMob(){document.getElementById('mobMenu').classList.remove('show')}
+
+/* ─── REVEAL ─── */
+var ro=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');ro.unobserve(e.target)}});
+},{threshold:.1,rootMargin:'0px 0px -30px 0px'});
+function initReveal(){document.querySelectorAll('.reveal:not(.in)').forEach(function(el){ro.observe(el)})}
+initReveal();
+var pgObs=new MutationObserver(initReveal);
+pgObs.observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']});
+
+/* ─── DASH BARS ─── */
+(function(){
+  var el=document.getElementById('dashBars');
+  if(!el)return;
+  var days=['L','M','X','J','V','S','D'],w=[52,68,71,58,80,88,76],h=48;
+  el.innerHTML=days.map(function(d,i){
+    return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:.2rem;height:100%;justify-content:flex-end">'+
+      '<div class="db" style="height:'+Math.round(w[i]/100*h)+'px;background:var(--green-xl);opacity:.75"></div>'+
+      '<div class="db-lbl">'+d+'</div></div>';
+  }).join('');
+})();
+
+/* ─── FAQ ─── */
+function faqToggle(btn){
+  var item=btn.closest('.faq-item');
+  var open=item.classList.contains('open');
+  item.closest('div').querySelectorAll('.faq-item').forEach(function(i){i.classList.remove('open')});
+  if(!open)item.classList.add('open');
+}
+
+/* ─── BILLING TOGGLE ─── */
+var isYearly=false;
+function toggleBilling(){
+  isYearly=!isYearly;
+  var sw=document.getElementById('toggleSw');
+  var badge=document.getElementById('saveBadge');
+  var lM=document.getElementById('tLblM');
+  var lY=document.getElementById('tLblY');
+  sw.classList.toggle('yearly',isYearly);
+  badge.style.display=isYearly?'inline-flex':'none';
+  lM.classList.toggle('active',!isYearly);
+  lY.classList.toggle('active',isYearly);
+  document.getElementById('gprice').innerHTML=isYearly?'12<sup>€</sup>':'19<sup>€</sup>';
+  document.getElementById('gperiod').textContent=isYearly?'/mes · Facturado 149€/año':'/mes · Facturado mensualmente';
+  document.getElementById('pprice').innerHTML=isYearly?'25<sup>€</sup>':'39<sup>€</sup>';
+  document.getElementById('pperiod').textContent=isYearly?'/mes · Facturado 299€/año':'/mes · Facturado mensualmente';
+}
+
+/* ─── BLOG FILTER ─── */
+function filterBlog(btn,cat){
+  document.querySelectorAll('.blog-cat-btn').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  document.querySelectorAll('.blog-card').forEach(function(c){
+    c.style.display=(cat==='all'||c.dataset.cat===cat)?'':'none';
+  });
+}
+
+/* ─── BLOG POSTS DATA ─── */
+var POSTS={
+  ansiedad:{tag:'Ansiedad',title:'Por qué tu cerebro no puede "simplemente calmarse" — y qué sí funciona',meta:'12 Abril 2025 · 7 min lectura',body:'<p>Cuando alguien te dice "relájate", probablemente tengas ganas de tirarles algo. Hay una razón concreta por la que ese consejo no funciona: no entiende cómo funciona la ansiedad.</p><h2>Tu cerebro no distingue entre amenazas reales e imaginadas</h2><p>La amígdala — la parte del cerebro responsable de la respuesta de alarma — no distingue entre un depredador y una presentación importante mañana. Cuando se activa, se activa. Y una vez activada, no puedes "pensar para salir" de ese estado. No funciona así.</p><blockquote>La ansiedad no es un problema de actitud. Es un sistema de alarma que se ha desregulado y necesita reaprendizaje, no fuerza de voluntad.<cite>— Principio de psicología cognitiva</cite></blockquote><h2>Qué sí funciona: interrumpir el ciclo</h2><p>Lo que realmente funciona no es ignorar la ansiedad sino interrumpir el ciclo pensamiento-emoción-reacción. Eso requiere primero reconocer el patrón, luego nombrarlo, y finalmente cuestionar el pensamiento que lo alimenta.</p><h2>El primer paso hoy</h2><p>Cuando notes que la ansiedad sube, en vez de tratar de calmarte, hazte esta pregunta: "¿Qué historia me estoy contando ahora mismo?" No los hechos — la historia que construyes sobre los hechos. Ese es el punto de entrada. Serenai te ayuda a identificar esa historia y cuestionarla.</p>'},
+  burnout:{tag:'Burnout',title:'No estás cansado de trabajar. Estás cansado de luchar contra ti mismo.',meta:'5 Abril 2025 · 9 min lectura',body:'<p>El burnout se describe siempre como agotamiento extremo. Pero hay algo debajo que nadie suele nombrar: la lucha constante entre lo que haces y lo que sientes que deberías hacer. Entre las expectativas y la realidad.</p><h2>La cara invisible del burnout</h2><p>Puedes dormir doce horas y seguir agotado. Puedes tomar vacaciones y volver igual. Porque el descanso físico no resuelve el agotamiento de sentido — ese estado de desconexión profunda entre lo que haces y lo que te importa.</p><blockquote>El burnout no es cansancio de hacer. Es cansancio de fingir que lo que haces tiene sentido cuando ya no lo tiene para ti.</blockquote><h2>Las tres señales que nadie menciona</h2><p>Primero: el cinismo. Segundo: la hipercrítica — nunca nada de lo que produces es suficientemente bueno. Tercero: la anestesia — ya no sientes ni lo bueno ni lo malo, solo un gris continuo.</p><h2>Cómo se sale de verdad</h2><p>No con vacaciones. Reconectando con por qué hacías lo que hacías. No el qué — el para qué. Ese proceso requiere tiempo y conversaciones honestas. Serenai puede ser el espacio donde empezar.</p>'},
+  relaciones:{tag:'Relaciones',title:'Los 3 patrones que arruinan todas tus relaciones (y cómo salir de ellos)',meta:'28 Marzo 2025 · 8 min lectura',body:'<p>Cambias de trabajo, de pareja, de ciudad — y los mismos conflictos vuelven. Eso no es mala suerte. Es un patrón. Y los patrones se pueden cambiar.</p><h2>Patrón 1: Interpretar sin preguntar</h2><p>Tu jefe no responde y ya "sabes" que está enfadado. Tu pareja llega callado y ya "sabes" que es por algo que hiciste. Esa tendencia a llenar los vacíos con la peor interpretación posible es uno de los patrones más destructivos en relaciones.</p><h2>Patrón 2: Evitar el conflicto hasta que explota</h2><p>Aguantas, minimizas, haces como que no pasa nada. Hasta que un día algo pequeño lo rompe todo. El conflicto evitado no desaparece — se acumula con intereses.</p><h2>Patrón 3: Buscar validación en vez de conexión</h2><p>Necesitar constantemente que te digan que estás bien convierte las relaciones en una fuente de evaluación permanente. Las personas que quieren a alguien así acaban agotadas.</p>'},
+  autoestima:{tag:'Autoestima',title:'La voz que te sabotea: cómo identificar tu crítico interno y dejar de obedecerle',meta:'20 Marzo 2025 · 6 min lectura',body:'<p>"No soy suficiente." "Me van a descubrir." Esa voz que suena con tanta autoridad, como si dijera verdades objetivas — no es la realidad. Es una construcción. Y no eres tú.</p><h2>De dónde viene</h2><p>En algún momento aprendiste que había que ser de una cierta manera para ser aceptado. Ese aprendizaje se internalizó como una voz que evalúa constantemente si cumples. Es una función de protección que se volvió tan automática que ya no distingues entre lo que piensas y lo que es verdad.</p><h2>Cómo identificarlo</h2><p>Presta atención cuando uses palabras absolutas: "siempre", "nunca", "todos", "nadie". Ese lenguaje absolutista es la firma del crítico interno. La realidad casi nunca es tan categórica.</p><h2>El primer movimiento</h2><p>No es silenciarlo — eso no funciona. Es observarlo. "Ah, ahí está mi crítico interno diciéndome que no soy suficiente." Hay una diferencia enorme entre "no soy suficiente" y "tengo el pensamiento de que no soy suficiente". El segundo deja espacio para cuestionarlo.</p>'},
+  escenarios:{tag:'Ansiedad',title:'Cómo registrar un escenario difícil para sacarle el máximo provecho',meta:'14 Marzo 2025 · 5 min lectura',body:'<p>Hay una diferencia entre desahogarse y crecer. Las dos cosas pueden sentirse aliviadoras en el momento, pero solo una produce cambio real.</p><h2>El error más común: describir, no analizar</h2><p>Cuando escribimos sobre algo que nos pasó, tendemos a contar la historia. "Mi jefe me dijo X, yo respondí Y, me fui sintiéndome mal." Eso es desahogo. Útil, pero limitado. Para que un escenario te enseñe algo, necesitas ir un nivel más profundo.</p><h2>Las 4 preguntas que cambian todo</h2><p>1. ¿Qué interpretación hice del hecho? (No el hecho — tu lectura de él.) 2. ¿Qué emoción surgió primero, antes de que pensaras? 3. ¿Qué comportamiento habitual tomé? 4. ¿Qué quería conseguir y qué conseguí realmente?</p><h2>Por qué Serenai funciona para esto</h2><p>Serenai no te deja quedarte en la superficie. Sus preguntas te llevan al nivel donde está el aprendizaje real. No el "qué pasó" sino el "qué construiste sobre lo que pasó".</p>'},
+  decision:{tag:'Bloqueos',title:'Parálisis por análisis: por qué no puedes tomar la decisión y qué hacer',meta:'7 Marzo 2025 · 7 min lectura',body:'<p>Llevas semanas dándole vueltas. Has hecho pros y contras. Has pedido opiniones. Has buscado en Google. Y sigues sin poder decidir. Cuanta más información tienes, más confundido estás. ¿Por qué?</p><h2>No es un problema de datos</h2><p>La parálisis por análisis no es un problema de información insuficiente. Es un problema de miedo. El miedo a equivocarte, a perder algo, a decepcionar a alguien — ese miedo es lo que paraliza, no la falta de datos.</p><h2>El bucle que no puedes ver</h2><p>Buscas más información para sentirte más seguro → más información genera más opciones → más opciones generan más incertidumbre → más incertidumbre activa más miedo → buscas más información.</p><h2>Cómo salir</h2><p>La pregunta no es "¿cuál es la decisión correcta?" — esa pregunta no tiene respuesta y por eso paraliza. La pregunta útil es "¿cuál de estas opciones se alinea más con lo que quiero ser?" Eso sí tiene respuesta. Y Serenai puede ayudarte a encontrarla.</p>'}
+};
+
+function openBlogPost(id){
+  var p=POSTS[id];if(!p)return;
+  document.getElementById('bdContent').innerHTML='<div class="bd-tag">'+p.tag+'</div><div class="bd-title">'+p.title+'</div><div class="bd-meta">'+p.meta+'</div><div class="bd-body">'+p.body+'</div>';
+  var det=document.getElementById('blogDetail');
+  det.classList.add('show');
+  det.scrollTop=0;
+}
+function closeBlogDetail(){
+  document.getElementById('blogDetail').classList.remove('show');
+}
+
+/* ─── PAYMENT ─── */
+var STRIPE_PK='pk_test_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+var stripe_=null,cardEl_=null;
+
+function openPM(plan,label){
+  if(plan==='free'){alert('✦ Redirigiendo a registro gratuito...\n\n(Conecta tu backend para el flujo de registro)');return}
+  document.getElementById('pmBadge').textContent=label.toUpperCase();
+  document.getElementById('pmEmail').value='';
+  document.getElementById('pm-err').textContent='';
+  document.getElementById('pmSubmit').textContent='Empezar 14 días gratis →';
+  document.getElementById('pmSubmit').disabled=false;
+  document.getElementById('pmBg').classList.add('show');
+  if(typeof Stripe!=='undefined'&&STRIPE_PK.indexOf('XXXX')===-1){
+    if(!stripe_)stripe_=Stripe(STRIPE_PK);
+    var els=stripe_.elements({locale:'es'});
+    var wrap=document.getElementById('stripeWrap');
+    wrap.innerHTML='';
+    cardEl_=els.create('card',{style:{base:{fontFamily:'\'Plus Jakarta Sans\',sans-serif',fontSize:'15px',color:'#1a1917','::placeholder':{color:'#c4bdb9'}},invalid:{color:'#dc2626'}}});
+    cardEl_.mount('#stripeWrap');
+    cardEl_.on('focus',function(){document.getElementById('stripeWrap').classList.add('focus')});
+    cardEl_.on('blur',function(){document.getElementById('stripeWrap').classList.remove('focus')});
+    cardEl_.on('change',function(e){document.getElementById('pm-err').textContent=e.error?e.error.message:''});
+  }
+}
+function closePM(){document.getElementById('pmBg').classList.remove('show')}
+document.getElementById('pmBg').addEventListener('click',function(e){if(e.target===this)closePM()});
+
+async function submitPM(){
+  var email=(document.getElementById('pmEmail').value||'').trim();
+  if(!email||!email.includes('@')){document.getElementById('pm-err').textContent='Introduce un correo electrónico válido.';return}
+  var btn=document.getElementById('pmSubmit');
+  btn.disabled=true;btn.textContent='Procesando...';
+  if(STRIPE_PK.indexOf('XXXX')!==-1||typeof Stripe==='undefined'){
+    setTimeout(function(){btn.disabled=false;btn.textContent='Empezar 14 días gratis →';closePM();alert('✦ Demo activo.\n\nPara pagos reales, configura tu clave pública en la variable STRIPE_PK.')},1400);
+    return;
+  }
+  var result=await stripe_.createPaymentMethod({type:'card',card:cardEl_,billing_details:{email:email}});
+  if(result.error){document.getElementById('pm-err').textContent=result.error.message;btn.disabled=false;btn.textContent='Empezar 14 días gratis →'}
+  else{closePM();btn.disabled=false;btn.textContent='Empezar 14 días gratis →';alert('✦ PaymentMethod: '+result.paymentMethod.id+'\n\nEnvía este ID a tu backend para crear la suscripción.')}
+}
+</script>
+</body>
+</html>
